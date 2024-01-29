@@ -1,0 +1,115 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+:root {
+  --orange-color: orange;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  align-self: center;
+  display: grid;
+  grid-template-areas: "title" "headerMenuDiv";
+  grid-template-rows: 1fr;
+  height: 10vh;
+  width: 550px;
+  background-color: var(--orange-color);
+  padding: 1rem;
+}
+
+#title {
+  display: flex;
+  flex-wrap: wrap;
+  align-self: center;
+  justify-self: center;
+  font-size: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
+#headerMenuDiv {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-self: flex-end;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+a:hover {
+  color: blue;
+}
+
+#headerMenuDiv > span:first-child {
+  font-weight: bold;
+  color: red;
+}
+
+main {
+  align-self: center;
+  height: 80vh;
+  width: 550px;
+  background-color: var(--orange-color);
+  padding: 1rem;
+  color: black;
+  overflow-y: scroll;
+}
+
+hr {
+  align-self: center;
+  width: 550px;
+}
+
+.songDiv {
+  display: flex;
+  flex-direction: row;
+  height: 5rem;
+  margin: 0px 10px 5px 10px;
+}
+
+.songInfoDiv {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  margin-left: 1rem;
+}
+
+.songInfoDiv > span:first-of-type {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+@media only screen and (max-width: 530px) {
+  header {
+    width: 100%;
+    padding-bottom: 5rem;
+  }
+
+  #headerMenuDiv {
+    display: grid;
+    grid-template-areas: "playlist artist" "albums tracks";
+    row-gap: 5px;
+    justify-content: space-between;
+  }
+
+  main {
+    width: 100%;
+  }
+
+  .songDiv {
+    display: flex;
+    flex-direction: column;
+    height: 5%;
+    margin: 0px 10px 15px 10px;
+  }
+}
