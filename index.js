@@ -4,105 +4,120 @@ const songs = [
     song: 'Say_Goodbye_-_VITNE',
     performedBy: 'VITNE',
     albumPicture: 'Say_Goodbye_-_VITNE.jpg',
-    index: 0
+    index: 0,
+    source: 'Say_Goodbye_-_VITNE.mp3'
   },
   {
     album: 'Jupiter',
     song: 'Masquerade_-_VITNE',
     performedBy: 'VITNE',
     albumPicture: 'Say_Goodbye_-_VITNE.jpg',
-    index: 1
+    index: 1,
+    source: 'Masquerade_-_VITNE.mp3'
   },
   {
     album: 'Jupiter',
     song: 'Are_You_Real_-_VITNE',
     performedBy: 'VITNE',
     albumPicture: 'Say_Goodbye_-_VITNE.jpg',
-    index: 2
+    index: 2,
+    source: 'Are_You_Real__-_VITNE.mp3'
   },
   {
     album: 'Eye Of The Storm',
     song: 'Boys,_Girls,_Toys_&(_Words_-_Modern_Pitch)',
     performedBy: 'MODERN PITCH',
     albumPicture: 'Boys,_Girls,_Toys_&_Words_-_Modern_Pitch.jpg',
-    index: 3
+    index: 3,
+    source: 'Boys,_Girls,_Toys_&_Words_-_Modern_Pitch.mp3'
   },
   {
     album: 'Higher And Higher',
     song: 'Higher_And_Higher_-_Scream_Inc',
     performedBy: 'SCREAM INC.',
     albumPicture: 'Higher_And_Higher_-_Scream_Inc.jpg',
-    index: 4
+    index: 4,
+    source: 'Higher_And_Higher_-_Scream_Inc.mp3'
   },
   {
     album: 'Jupiter',
     song: 'Mirror_-_VITNE',
     performedBy: 'VITNE',
     albumPicture: 'Say_Goodbye_-_VITNE.jpg',
-    index: 5
+    index: 5,
+    source: 'Mirror_-_VITNE.mp3'
   },
   {
     album: 'Not_My_Problem',
     song: 'Not_My_Problem_-_All_My_Friends_Hate_Me',
     performedBy: 'All_My_Friends_Hate_Me',
     albumPicture: 'Not_My_Problem_-_All_My_Friends_Hate_Me.jpg',
-    index: 6
+    index: 6,
+    source: 'Not_My_Problem_-_All_My_Friends_Hate_Me.mp3'
   },
   {
     album: 'Apply Within',
     song: 'Old_News_-_Hot_Fiction',
     performedBy: 'Hot_Fiction',
     albumPicture: 'Old_News_-_Hot_Fiction.jpg',
-    index: 7
+    index: 7,
+    source: 'Old_News_-_Hot_Fiction.mp3'
   },
   {
     album: 'Kites',
     song: 'Peyote_-_Kinematic',
     performedBy: 'Kinematic',
     albumPicture: 'Peyote_-_Kinematic.jpg',
-    index: 8
+    index: 8,
+    source: 'Peyote_-_Kinematic.mp3'
   },
   {
     album: 'Kites',
     song: 'Already_Here_-_Kinematic',
     performedBy: 'Kinematic',
     albumPicture: 'Peyote_-_Kinematic.jpg',
-    index: 9
+    index: 9,
+    source: 'Already_Here_-_Kinematic.mp3'
   },
   {
     album: 'Encephalon',
     song: 'Encephalon_-_VITNE.mp3',
     performedBy: 'VITNE',
     albumPicture: 'Enchaphalon-VITNE.jpg',
-    index: 10
+    index: 10,
+    source: 'Encephalon_-_VITNE.mp3'
   },
   {
     album: 'Encephalon',
     song: 'Encephalon_(Instrumental)_-_VITNE.mp3',
     performedBy: 'VITNE',
     albumPicture: 'Enchaphalon-VITNE.jpg',
-    index: 11
+    index: 11,
+    source: 'Encephalon_(Instrumental)_-_VITNE.mp3'
   },
   {
     album: 'Special',
     song: 'Special_-_Kinematic',
     performedBy: 'Kinematic',
     albumPicture: 'Special-Kinematic.jpg',
-    index: 12
+    index: 12,
+    source: 'Special_-_Kinematic.mp3'
   },
   {
     album: 'Special',
     song: 'Glide_-_Kinematic',
     performedBy: 'Kinematic',
     albumPicture: 'Special-Kinematic.jpg',
-    index: 13
+    index: 13,
+    source: 'Glide_-_Kinematic.mp3'
   },
   {
     album: 'Special',
     song: 'Dissipate_-_Kinematic',
     performedBy: 'Kinematic',
     albumPicture: 'Special-Kinematic.jpg',
-    index: 14
+    index: 14,
+    source: 'Dissipate_-_Kinematic.mp3'
   }
 ]
 
@@ -112,74 +127,124 @@ const selectedIndexForAlbum = localStorage.getItem('indexForAlbum')
 const selectedIndexForSong = localStorage.getItem('indexForSong')
 const selectedIndexForArtist = localStorage.getItem('indexForArtist')
 
-function getSongs () {
-  var selectedSongs = []
+document.getElementById('clear').addEventListener('click', function () {
+  localStorage.removeItem('indexForAlbum')
+  localStorage.removeItem('indexForSong')
+  localStorage.removeItem('indexForArtist')
+  localStorage.removeItem('indexForAllSelectedSongs')
+  window.location.reload(true)
+})
 
+var selectedSongs = []
+
+let previousSelectionStorage = window.localStorage.getItem(
+  'indexForAllSelectedSongs'
+)
+let previousSelectionObjects = JSON.parse(previousSelectionStorage)
+console.log(previousSelectionObjects)
+
+function getSongs () {
   if (selectedIndexForAlbum || selectedIndexForAlbum === '') {
     /*clicked name is modified to remove _ char -> not searchable anymore*/
     const selectedAlbum = songs[selectedIndexForAlbum].album
 
-    for (let i = 0; i < songs.length; i++) {
-      if (songs[i].album == selectedAlbum) {
-        let songNameWithSpace = songs[i].song.replaceAll('_', ' ')
-        let correctedSongName = songNameWithSpace.substring(
-          0,
-          songNameWithSpace.indexOf('-')
-        )
-
-        const obj = {
-          albumPicture: songs[i].albumPicture,
-          songName: correctedSongName,
-          performedBy: songs[i].performedBy.replaceAll('_', ' ')
-        }
-        selectedSongs.push(obj)
-      }
-    }
+    //get songs for album---------------------------
+    getSongsForAlbum(songs, selectedAlbum)
+    localStorage.removeItem('indexForAlbum')
   }
+  //get songs for artist---------------------------
   if (selectedIndexForArtist || selectedIndexForArtist === '') {
     const selectedArtist = songs[selectedIndexForArtist].performedBy
-
-    for (let i = 0; i < songs.length; i++) {
-      if (songs[i].performedBy == selectedArtist) {
-        let songNameWithSpace = songs[i].song.replaceAll('_', ' ')
-        let correctedSongName = songNameWithSpace.substring(
-          0,
-          songNameWithSpace.indexOf('-')
-        )
-
-        const obj = {
-          albumPicture: songs[i].albumPicture,
-          songName: correctedSongName,
-          performedBy: songs[i].performedBy.replaceAll('_', ' ')
-        }
-        selectedSongs.push(obj)
-      }
-    }
-  } else if (selectedIndexForSong || selectedIndexForSong === '') {
-    let songNameWithSpace = songs[selectedIndexForSong].song.replaceAll(
-      '_',
-      ' '
-    )
-    let correctedSongName = songNameWithSpace.substring(
-      0,
-      songNameWithSpace.indexOf('-')
-    )
-
-    const obj = {
-      albumPicture: songs[selectedIndexForSong].albumPicture,
-      songName: correctedSongName,
-      performedBy: songs[selectedIndexForSong].performedBy.replaceAll('_', ' ')
-    }
-    selectedSongs.push(obj)
+    getSongsForArtist(songs, selectedArtist)
+    localStorage.removeItem('indexForArtist')
   }
+  //get song from tracklist---------------------------
+  if (selectedIndexForSong || selectedIndexForSong === '') {
+    getSongsForTracklist(songs, selectedIndexForSong)
+  }
+  //there were previous items in the playlist
+  if (
+    previousSelectionObjects !== null &&
+    previousSelectionObjects.length > 0
+  ) {
+    for (obj of previousSelectionObjects) {
+      selectedSongs.push(obj)
+    }
+  }
+
+  localStorage.setItem(
+    'indexForAllSelectedSongs',
+    JSON.stringify(selectedSongs)
+  )
 
   return selectedSongs
 }
 
-function createSongItemAsHtml (songItem) {
-  return `<div class="songDiv"><img src="assets/songlist/${songItem.albumPicture}"><div class="songInfoDiv"><span>${songItem.songName}</span><span>${songItem.performedBy}</span></div>
-</div>`
+function getSongsForAlbum (songs, selectedAlbum) {
+  for (let i = 0; i < songs.length; i++) {
+    if (songs[i].album == selectedAlbum) {
+      let songNameWithSpace = songs[i].song.replaceAll('_', ' ')
+      let correctedSongName = songNameWithSpace.substring(
+        0,
+        songNameWithSpace.indexOf('-')
+      )
+
+      const obj = {
+        albumPicture: songs[i].albumPicture,
+        songName: correctedSongName,
+        performedBy: songs[i].performedBy.replaceAll('_', ' '),
+        index: songs[i].index
+      }
+      selectedSongs.push(obj)
+    }
+  }
 }
+
+function getSongsForArtist (songs, selectedArtist) {
+  for (let i = 0; i < songs.length; i++) {
+    if (songs[i].performedBy == selectedArtist) {
+      let songNameWithSpace = songs[i].song.replaceAll('_', ' ')
+      let correctedSongName = songNameWithSpace.substring(
+        0,
+        songNameWithSpace.indexOf('-')
+      )
+
+      const obj = {
+        albumPicture: songs[i].albumPicture,
+        songName: correctedSongName,
+        performedBy: songs[i].performedBy.replaceAll('_', ' '),
+        index: songs[i].index
+      }
+      selectedSongs.push(obj)
+    }
+  }
+}
+
+function getSongsForTracklist (songs, selectedIndexForSong) {
+  let songNameWithSpace = songs[selectedIndexForSong].song.replaceAll('_', ' ')
+  let correctedSongName = songNameWithSpace.substring(
+    0,
+    songNameWithSpace.indexOf('-')
+  )
+
+  const obj = {
+    albumPicture: songs[selectedIndexForSong].albumPicture,
+    songName: correctedSongName,
+    performedBy: songs[selectedIndexForSong].performedBy.replaceAll('_', ' '),
+    index: selectedIndexForSong
+  }
+  selectedSongs.push(obj)
+  localStorage.removeItem('indexForSong')
+}
+
+function createSongItemAsHtml (songItem) {
+  return `<div class="songDiv"><img src="assets/songlist/${songItem.albumPicture}"><div class="songInfoDiv"><span>${songItem.songName}</span><span>${songItem.performedBy}</span><span hidden>${songItem.index}</span>
+</div></div>`
+}
+
+const selectedIndexForAllSongs = localStorage.getItem(
+  'indexForAllSelectedSongs'
+)
 
 const songInfoArray = getSongs()
 
@@ -190,3 +255,251 @@ let songsAsHtml = songInfoArray.map(song => {
 let htmlString = songsAsHtml.join('')
 let songSection = document.getElementById('songSection')
 songSection.innerHTML = htmlString
+
+document
+  .getElementById('songSection')
+  .addEventListener('click', clickedSection => {
+    let playlistIndex =
+      clickedSection.target.parentElement.children[1].children[2].innerText
+
+    let playlistAsHtml = createPlaylistHtml(playlistIndex)
+    let playerSection = document.getElementById('player')
+    playerSection.innerHTML = playlistAsHtml
+  })
+
+function createPlaylistHtml (playlistIndex) {
+  const selectedSong = songs[playlistIndex]
+  let songSource = selectedSong.source
+  let pictureSource = selectedSong.albumPicture
+  let songNameWithSpace = selectedSong.song.replaceAll('_', ' ')
+  let correctedSongName = songNameWithSpace.substring(
+    0,
+    songNameWithSpace.indexOf('-')
+  )
+  let artist = selectedSong.performedBy.replaceAll('_', ' ')
+  let albumTitle = selectedSong.album.replaceAll('_', ' ')
+
+  return `<audio><source src='assets/songlist/${songSource}'></source></audio><img id="playerPicture" src='assets/songlist/${pictureSource}' alt=""><h2 id="title">${correctedSongName}</h2><h3 id="artist">${artist}</h3><h4 id="album">${albumTitle}</h4><input id="slider" type="range" min="1" max="100" value="0"><div id="timesDiv"><span id="elapsedTime">00:00</span><span id="timeLength">00:00</span></div><div id="buttonsDiv"><span id="goBackButton" class="material-symbols-outlined">arrow_back_ios_new</span><span id="goForwardButton" class="material-symbols-outlined">arrow_forward_ios</span><span class="pauseButton material-symbols-outlined">not_started</span><span id="loopButton" class="material-symbols-outlined">laps</span><span id="shuffleButton" class="material-symbols-outlined">shuffle</span></div><span hidden>${playlistIndex}</span> `
+}
+
+let isLopped = false
+let isShuffled = false
+
+//********************* PLAYER FUNCTIONS****************************** */
+document.getElementById('player').addEventListener('click', function (e) {
+  let audio = e.target.parentElement.parentElement.children[0]
+
+  if (e.target.classList.contains('pauseButton')) {
+    startMusic(e, audio)
+  } else if (e.target.classList.contains('startButton')) {
+    pauseMusic(e, audio)
+  } else if (e.target.id == 'goBackButton') {
+    getPreviousMusic(e)
+  } else if (e.target.id == 'goForwardButton') {
+    getNextMusic(e, audio)
+  } else if (e.target.id == 'loopButton') {
+    makeLoopMusicList(e)
+  } else if (e.target.id == 'shuffleButton') {
+    makeShuffleMusicList(e)
+  }
+})
+
+function startMusic (e, audio) {
+  audio.play()
+  e.target.innerText = 'pause_circle'
+  e.target.classList.remove('pauseButton')
+  e.target.classList.add('startButton')
+  resetValues(e, audio)
+
+  if (isLopped) {
+    getLooped(e, audio)
+  }
+  if (isShuffled) {
+    getShuffledMusicList(e, audio)
+  }
+}
+
+function resetValues (e, audio) {
+  let timeLength = document.getElementById('timeLength')
+  timeLength.innerText = getPrintedTime(audio.duration)
+
+  let elapsedTime = document.getElementById('elapsedTime')
+  const slider = document.getElementsByTagName('input')
+
+  audio.addEventListener('timeupdate', () => {
+    elapsedTime.innerText = getPrintedTime(audio.currentTime)
+    slider[0].max = audio.duration
+    slider[0].value = audio.currentTime
+
+    if (audio.ended) {
+      slider[0].max = 100
+      slider[0].value = 100
+    }
+  })
+
+  /*   audio.addEventListener('seeking', () => {
+    console.log('here')
+    elapsedTime.innerText = getPrintedTime(slider.value)
+  }) */
+}
+
+function getPrintedTime (baseTime) {
+  let resultTimeMin = Math.floor(baseTime / 60)
+  if (resultTimeMin < 10) resultTimeMin = '0' + resultTimeMin
+
+  let resultTimeSec = Math.floor(baseTime % 60)
+  if (resultTimeSec < 10) resultTimeSec = '0' + resultTimeSec
+
+  return `${resultTimeMin}:${resultTimeSec}`
+}
+
+function getLooped (e, audio) {
+  const musicIndex = e.target.parentElement.parentElement.children[8].innerText
+
+  const allMusicInPlayer =
+    e.target.parentElement.parentElement.parentElement.children[2]
+
+  audio.addEventListener('timeupdate', () => {
+    if (audio.ended) {
+      for (let i = 0; i < allMusicInPlayer.children.length; i++) {
+        let lastMusicIndexInList =
+          allMusicInPlayer.children[allMusicInPlayer.children.length - 1]
+            .children[1].children[2].innerText
+
+        if (musicIndex == lastMusicIndexInList) {
+          let firstMusicIndex =
+            allMusicInPlayer.children[0].children[1].children[2].innerText
+
+          let playlistAsHtml = createPlaylistHtml(firstMusicIndex)
+          let playerSection = document.getElementById('player')
+          playerSection.innerHTML = playlistAsHtml
+
+          let newSource = ''
+          for (let song of songs) {
+            if (song.index == firstMusicIndex) {
+              newSource = `assets/songlist/${song.source}`
+            }
+          }
+          audio.src = newSource
+          audio.autoplay = true
+          audio.play()
+        } else if (musicIndex != lastMusicIndexInList) {
+          getNextMusic(e, audio)
+        }
+      }
+    }
+  })
+}
+
+function pauseMusic (e, audio) {
+  audio.pause()
+  e.target.innerText = 'not_started'
+  e.target.classList.remove('startButton')
+  e.target.classList.add('pauseButton')
+}
+
+function getPreviousMusic (e) {
+  const musicIndex = e.target.parentElement.parentElement.children[8].innerText
+  let previousMusicIndex = -1
+
+  const allMusicInPlayer =
+    e.target.parentElement.parentElement.parentElement.children[3]
+
+  for (let i = 0; i < allMusicInPlayer.children.length; i++) {
+    let musicIndexInList =
+      allMusicInPlayer.children[i].children[1].children[2].innerText
+
+    if (musicIndex == musicIndexInList && i > 0) {
+      previousMusicIndex =
+        allMusicInPlayer.children[i - 1].children[1].children[2].innerText
+
+      let playlistAsHtml = createPlaylistHtml(previousMusicIndex)
+      let playerSection = document.getElementById('player')
+      playerSection.innerHTML = playlistAsHtml
+    }
+  }
+}
+
+function getNextMusic (e, audio) {
+  const musicIndex = e.target.parentElement.parentElement.children[8].innerText
+  let nextMusicIndex = -1
+
+  const allMusicInPlayer =
+    e.target.parentElement.parentElement.parentElement.children[3]
+
+  for (let i = 0; i < allMusicInPlayer.children.length; i++) {
+    let musicIndexInList =
+      allMusicInPlayer.children[i].children[1].children[2].innerText
+
+    if (
+      musicIndex == musicIndexInList &&
+      i < allMusicInPlayer.children.length - 1
+    ) {
+      nextMusicIndex =
+        allMusicInPlayer.children[i + 1].children[1].children[2].innerText
+
+      let playlistAsHtml = createPlaylistHtml(nextMusicIndex)
+      let playerSection = document.getElementById('player')
+      playerSection.innerHTML = playlistAsHtml
+      if (isLopped) {
+        let newSource = ''
+        for (let song of songs) {
+          if (song.index == nextMusicIndex) {
+            newSource = `assets/songlist/${song.source}`
+          }
+        }
+        audio.src = newSource
+        audio.autoplay = true
+        audio.play()
+      }
+    }
+  }
+}
+
+function makeLoopMusicList (e) {
+  if (isLopped == true) {
+    isLopped = false
+    e.target.style.color = 'black'
+    e.target.style.fontWeight = 'normal'
+  } else if (isLopped == false) {
+    isLopped = true
+    e.target.style.color = 'darkred'
+    e.target.style.fontWeight = 'bold'
+  }
+}
+
+function makeShuffleMusicList (e) {
+  if (isShuffled == true) {
+    isShuffled = false
+    e.target.style.color = 'black'
+    e.target.style.fontWeight = 'normal'
+  } else if (isShuffled == false) {
+    isShuffled = true
+    e.target.style.color = 'darkred'
+    e.target.style.fontWeight = 'bold'
+  }
+}
+
+function getShuffledMusicList (e, audio) {
+  //if duration is ended : shuffle next music index
+  const musicIndex = e.target.parentElement.parentElement.children[8].innerText
+  const allMusicInPlayer =
+    e.target.parentElement.parentElement.parentElement.children[2]
+
+  for (let i = 0; i < allMusicInPlayer.children.length; i++) {
+    let randomIndex = getRandomInt(allMusicInPlayer.children.length)
+
+    let randomMusicIndexInList =
+      allMusicInPlayer.children[randomIndex].children[1].children[2].innerText
+
+    if (musicIndex !== randomMusicIndexInList) {
+      let playlistAsHtml = createPlaylistHtml(randomMusicIndexInList)
+      let playerSection = document.getElementById('player')
+      playerSection.innerHTML = playlistAsHtml
+
+      audio.autoplay = true
+      audio.play()
+      return
+    }
+  }
+}

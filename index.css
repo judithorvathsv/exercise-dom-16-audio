@@ -39,6 +39,7 @@ header {
   flex-wrap: wrap;
   justify-content: space-between;
   align-self: flex-end;
+  margin-right: 2rem;
 }
 
 a {
@@ -70,6 +71,15 @@ hr {
   width: 550px;
 }
 
+#clear {
+  background-color: black;
+  color: white;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 3px;
+  border-color: black;
+}
+
 .songDiv {
   display: flex;
   flex-direction: row;
@@ -87,6 +97,39 @@ hr {
 .songInfoDiv > span:first-of-type {
   font-size: 1.2rem;
   font-weight: bold;
+}
+
+/*-----  player styling ------*/
+#player {
+  display: flex;
+  flex-direction: column;
+}
+
+#playerPicture {
+  width: 100%;
+}
+
+#title {
+  align-self: center;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+#artist {
+  align-self: center;
+  padding-bottom: 0.5rem;
+}
+#album {
+  align-self: center;
+  padding-bottom: 1rem;
+}
+
+#buttonsDiv,
+#timesDiv {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  padding-top: 0.5rem;
 }
 
 @media only screen and (max-width: 530px) {

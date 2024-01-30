@@ -41,9 +41,6 @@ document
 
     localStorage.setItem('indexForAlbum', album)
 
-    localStorage.removeItem('indexForSong')
-    localStorage.removeItem('indexForArtist')
-
     /*  localStorage.setItem('songs', JSON.stringify(songs)) */
 
     window.location = 'index.html'

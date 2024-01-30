@@ -42,13 +42,21 @@ trackSection.innerHTML = htmlString
 document
   .getElementById('trackSection')
   .addEventListener('click', clickedSection => {
-    let songIndex =
-      clickedSection.target.parentElement.children[1].children[3].innerText
+    let songIndex = -1
+
+    if (
+      clickedSection.target.parentElement.children[1].classList.contains(
+        'songInfoDiv'
+      )
+    ) {
+      songIndex =
+        clickedSection.target.parentElement.children[1].children[3].innerText
+    } else {
+      let parent = clickedSection.target.parentElement.parentElement.children[1]
+      songIndex = parent.children[3].innerText
+    }
 
     localStorage.setItem('indexForSong', songIndex)
-
-    localStorage.removeItem('indexForAlbum')
-    localStorage.removeItem('indexForArtist')
 
     window.location = 'index.html'
   })

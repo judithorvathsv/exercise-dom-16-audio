@@ -42,11 +42,5 @@ document
       clickedSection.target.parentElement.children[1].children[1].innerText
 
     localStorage.setItem('indexForArtist', artist)
-
-    localStorage.removeItem('indexForSong')
-    localStorage.removeItem('indexForAlbum')
-
-    /*  localStorage.setItem('songs', JSON.stringify(songs)) */
-
     window.location = 'index.html'
   })
