@@ -141,7 +141,6 @@ let previousSelectionStorage = window.localStorage.getItem(
   'indexForAllSelectedSongs'
 )
 let previousSelectionObjects = JSON.parse(previousSelectionStorage)
-console.log(previousSelectionObjects)
 
 function getSongs () {
   if (selectedIndexForAlbum || selectedIndexForAlbum === '') {
@@ -284,6 +283,7 @@ function createPlaylistHtml (playlistIndex) {
 
 let isLopped = false
 let isShuffled = false
+let isSeeked = false
 
 //********************* PLAYER FUNCTIONS****************************** */
 document.getElementById('player').addEventListener('click', function (e) {
@@ -304,43 +304,28 @@ document.getElementById('player').addEventListener('click', function (e) {
   }
 })
 
-function startMusic (e, audio) {
-  audio.play()
-  e.target.innerText = 'pause_circle'
-  e.target.classList.remove('pauseButton')
-  e.target.classList.add('startButton')
-  resetValues(e, audio)
-
-  if (isLopped) {
-    getLooped(e, audio)
-  }
-  if (isShuffled) {
-    getShuffledMusicList(e, audio)
+function makeLoopMusicList (e) {
+  if (isLopped == true) {
+    isLopped = false
+    e.target.style.color = 'black'
+    e.target.style.fontWeight = 'normal'
+  } else if (isLopped == false) {
+    isLopped = true
+    e.target.style.color = 'darkred'
+    e.target.style.fontWeight = 'bold'
   }
 }
 
-function resetValues (e, audio) {
-  let timeLength = document.getElementById('timeLength')
-  timeLength.innerText = getPrintedTime(audio.duration)
-
-  let elapsedTime = document.getElementById('elapsedTime')
-  const slider = document.getElementsByTagName('input')
-
-  audio.addEventListener('timeupdate', () => {
-    elapsedTime.innerText = getPrintedTime(audio.currentTime)
-    slider[0].max = audio.duration
-    slider[0].value = audio.currentTime
-
-    if (audio.ended) {
-      slider[0].max = 100
-      slider[0].value = 100
-    }
-  })
-
-  /*   audio.addEventListener('seeking', () => {
-    console.log('here')
-    elapsedTime.innerText = getPrintedTime(slider.value)
-  }) */
+function makeShuffleMusicList (e) {
+  if (isShuffled == true) {
+    isShuffled = false
+    e.target.style.color = 'black'
+    e.target.style.fontWeight = 'normal'
+  } else if (isShuffled == false) {
+    isShuffled = true
+    e.target.style.color = 'darkred'
+    e.target.style.fontWeight = 'bold'
+  }
 }
 
 function getPrintedTime (baseTime) {
@@ -353,6 +338,120 @@ function getPrintedTime (baseTime) {
   return `${resultTimeMin}:${resultTimeSec}`
 }
 
+//start music function------------
+function startMusic (e, audio) {
+  audio.play()
+  e.target.innerText = 'pause_circle'
+  e.target.classList.remove('pauseButton')
+  e.target.classList.add('startButton')
+  resetValues(audio)
+
+  if (isLopped) {
+    getLooped(e, audio)
+  }
+  if (isShuffled) {
+    getShuffledMusicList(e, audio)
+  }
+}
+
+function resetValues (audio) {
+  let timeLength = document.getElementById('timeLength')
+  timeLength.innerText = getPrintedTime(audio.duration)
+
+  let elapsedTime = document.getElementById('elapsedTime')
+
+  const slider = document.getElementById('slider')
+
+  if (!isSeeked) {
+    elapsedTime.innerText = getPrintedTime(audio.currentTime)
+  } else if (isSeeked) {
+    slider.max = audio.duration //-------------
+    //handleSeek(audio, slider)
+    elapsedTime.innerText = getPrintedTime(slider.value)
+  }
+
+  audio.addEventListener('timeupdate', () => {
+    if (!isSeeked) {
+      elapsedTime.innerText = getPrintedTime(audio.currentTime)
+    }
+    if (audio.ended) {
+      //setting total end of slider line:
+      slider.max = '100'
+      slider.value = 100
+      elapsedTime.innerText = getPrintedTime(audio.duration)
+    }
+  })
+}
+
+//pause music function------------
+function pauseMusic (e, audio) {
+  audio.pause()
+  e.target.innerText = 'not_started'
+  e.target.classList.remove('startButton')
+  e.target.classList.add('pauseButton')
+}
+
+//get previous music function------------
+function getPreviousMusic (e) {
+  const musicIndex = e.target.parentElement.parentElement.children[8].innerText
+  let previousMusicIndex = -1
+
+  const allMusicInPlayer =
+    e.target.parentElement.parentElement.parentElement.children[3]
+
+  for (let i = 0; i < allMusicInPlayer.children.length; i++) {
+    let musicIndexInList =
+      allMusicInPlayer.children[i].children[1].children[2].innerText
+
+    if (musicIndex == musicIndexInList && i > 0) {
+      previousMusicIndex =
+        allMusicInPlayer.children[i - 1].children[1].children[2].innerText
+
+      let playlistAsHtml = createPlaylistHtml(previousMusicIndex)
+      let playerSection = document.getElementById('player')
+      playerSection.innerHTML = playlistAsHtml
+    }
+  }
+}
+
+//get next music function------------
+function getNextMusic (e, audio) {
+  const musicIndex = e.target.parentElement.parentElement.children[8].innerText
+  let nextMusicIndex = -1
+
+  const allMusicInPlayer =
+    e.target.parentElement.parentElement.parentElement.children[3]
+
+  for (let i = 0; i < allMusicInPlayer.children.length; i++) {
+    let musicIndexInList =
+      allMusicInPlayer.children[i].children[1].children[2].innerText
+
+    if (
+      musicIndex == musicIndexInList &&
+      i < allMusicInPlayer.children.length - 1
+    ) {
+      nextMusicIndex =
+        allMusicInPlayer.children[i + 1].children[1].children[2].innerText
+
+      let playlistAsHtml = createPlaylistHtml(nextMusicIndex)
+      let playerSection = document.getElementById('player')
+      playerSection.innerHTML = playlistAsHtml
+      if (isLopped) {
+        let newSource = ''
+        for (let song of songs) {
+          if (song.index == nextMusicIndex) {
+            newSource = `assets/songlist/${song.source}`
+          }
+        }
+        audio.src = newSource
+        audio.autoplay = true
+        audio.play()
+      }
+    }
+  }
+}
+
+//loop music list function------------
 function getLooped (e, audio) {
   const musicIndex = e.target.parentElement.parentElement.children[8].innerText
 
@@ -391,95 +490,7 @@ function getLooped (e, audio) {
   })
 }
 
-function pauseMusic (e, audio) {
-  audio.pause()
-  e.target.innerText = 'not_started'
-  e.target.classList.remove('startButton')
-  e.target.classList.add('pauseButton')
-}
-
-function getPreviousMusic (e) {
-  const musicIndex = e.target.parentElement.parentElement.children[8].innerText
-  let previousMusicIndex = -1
-
-  const allMusicInPlayer =
-    e.target.parentElement.parentElement.parentElement.children[3]
-
-  for (let i = 0; i < allMusicInPlayer.children.length; i++) {
-    let musicIndexInList =
-      allMusicInPlayer.children[i].children[1].children[2].innerText
-
-    if (musicIndex == musicIndexInList && i > 0) {
-      previousMusicIndex =
-        allMusicInPlayer.children[i - 1].children[1].children[2].innerText
-
-      let playlistAsHtml = createPlaylistHtml(previousMusicIndex)
-      let playerSection = document.getElementById('player')
-      playerSection.innerHTML = playlistAsHtml
-    }
-  }
-}
-
-function getNextMusic (e, audio) {
-  const musicIndex = e.target.parentElement.parentElement.children[8].innerText
-  let nextMusicIndex = -1
-
-  const allMusicInPlayer =
-    e.target.parentElement.parentElement.parentElement.children[3]
-
-  for (let i = 0; i < allMusicInPlayer.children.length; i++) {
-    let musicIndexInList =
-      allMusicInPlayer.children[i].children[1].children[2].innerText
-
-    if (
-      musicIndex == musicIndexInList &&
-      i < allMusicInPlayer.children.length - 1
-    ) {
-      nextMusicIndex =
-        allMusicInPlayer.children[i + 1].children[1].children[2].innerText
-
-      let playlistAsHtml = createPlaylistHtml(nextMusicIndex)
-      let playerSection = document.getElementById('player')
-      playerSection.innerHTML = playlistAsHtml
-      if (isLopped) {
-        let newSource = ''
-        for (let song of songs) {
-          if (song.index == nextMusicIndex) {
-            newSource = `assets/songlist/${song.source}`
-          }
-        }
-        audio.src = newSource
-        audio.autoplay = true
-        audio.play()
-      }
-    }
-  }
-}
-
-function makeLoopMusicList (e) {
-  if (isLopped == true) {
-    isLopped = false
-    e.target.style.color = 'black'
-    e.target.style.fontWeight = 'normal'
-  } else if (isLopped == false) {
-    isLopped = true
-    e.target.style.color = 'darkred'
-    e.target.style.fontWeight = 'bold'
-  }
-}
-
-function makeShuffleMusicList (e) {
-  if (isShuffled == true) {
-    isShuffled = false
-    e.target.style.color = 'black'
-    e.target.style.fontWeight = 'normal'
-  } else if (isShuffled == false) {
-    isShuffled = true
-    e.target.style.color = 'darkred'
-    e.target.style.fontWeight = 'bold'
-  }
-}
-
+//get shuffle music list function------------
 function getShuffledMusicList (e, audio) {
   //if duration is ended : shuffle next music index
   const musicIndex = e.target.parentElement.parentElement.children[8].innerText
@@ -502,4 +513,23 @@ function getShuffledMusicList (e, audio) {
       return
     }
   }
+}
+
+//slider functions------------
+document.getElementById('player').addEventListener('change', function (e) {
+  let audio = document.getElementsByTagName('audio')
+  if (e.target.id == 'slider') {
+    isSeeked = true
+    handleSeek(audio[1], e)
+  }
+})
+
+function handleSeek (audio, e) {
+  let sliderValue = (e.target.value / 100) * audio.duration
+
+  document.getElementById('elapsedTime').innerHTML = getPrintedTime(sliderValue)
+  document.getElementById('timeLength').innerHTML = getPrintedTime(
+    audio.duration
+  )
+  audio.currentTime = sliderValue
 }

@@ -38,8 +38,18 @@ artistSection.innerHTML = htmlString
 document
   .getElementById('artistSection')
   .addEventListener('click', clickedSection => {
-    let artist =
-      clickedSection.target.parentElement.children[1].children[1].innerText
+    let artist = -1
+
+    if (
+      clickedSection.target.parentElement.children[1].classList.contains(
+        'artistInfoDiv'
+      )
+    ) {
+      artist =
+        clickedSection.target.parentElement.children[1].children[1].innerText
+    } else {
+      artist = clickedSection.target.parentElement.children[1].innerText
+    }
 
     localStorage.setItem('indexForArtist', artist)
     window.location = 'index.html'

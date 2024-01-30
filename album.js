@@ -36,12 +36,21 @@ albumSection.innerHTML = htmlString
 document
   .getElementById('albumSection')
   .addEventListener('click', clickedSection => {
-    let album =
-      clickedSection.target.parentElement.children[1].children[2].innerText
+    let album = -1
+
+    if (
+      clickedSection.target.parentElement.children[1].classList.contains(
+        'albumInfoDiv'
+      )
+    ) {
+      album =
+        clickedSection.target.parentElement.children[1].children[2].innerText
+    } else {
+      let parent = clickedSection.target.parentElement.parentElement
+      album = parent.children[1].children[2].innerText
+    }
 
     localStorage.setItem('indexForAlbum', album)
-
-    /*  localStorage.setItem('songs', JSON.stringify(songs)) */
 
     window.location = 'index.html'
   })

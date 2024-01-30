@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="test.scss">
+</head>
+
+<body>
+    <center>
+        <h3>Click on total time to see remaining time</h3>
+    </center>
+    <div class="audio-player">
+        <div id="play-btn"></div>
+        <div class="audio-wrapper" id="player-container" href="javascript:;">
+            <audio id="player" preload="none" ondurationchange="setupSeek()" ontimeupdate="initProgressBar()">
+                <source src='assets/songlist/Are_You_Real__-_VITNE.mp3' type="audio/mp3">
+            </audio>
+        </div>
+        <div class="player-controls scrubber">
+            <p>Final <small>by</small> Olivier Orand</p>
+            <span id="seekObjContainer">
+                <input id="seekObj" type="range" name="rng" min="0" step="0.25" value="0" onchange="seekAudio()" oninput="seekAudio()" class="seek">
+            </span>
+            <br>
+
+            <small style="float: left; position: relative; left: 21px;" class="start-time"></small>
+
+            <small style="float: right; position: relative; right: 21px;" class="end-time" onclick="showhideRemaining(this)"></small>
+
+
+        </div>
+        <div class="album-image" style="background-image: url('https://i1.sndcdn.com/artworks-000361523058-t00uhz-large.jpg')"></div>
+    </div>
+
+    <script>
+        var isSeeking = false;
+        var seek = document.getElementById("seekObj");
+        var player = document.getElementById("player");
+        SetSeekColor();
+        function calculateTotalValue(length) {
+            var minutes = Math.floor(length / 60),
+                seconds_int = length - minutes * 60,
+                seconds_str = seconds_int.toString(),
+                seconds = seconds_str.split(".")[0],
+                temp_min = minutes.toString().length === 1 ? "0" + minutes : minutes,
+                temp_sec = seconds.toString().length === 1 ? "0" + seconds : seconds;
+            return temp_min + ":" + temp_sec;
+        }
+
+        function calculateCurrentValue(_seconds) {
+            function padTime(t) {
+                return t < 10 ? "0" + t : t;
+            }
+
+            if (typeof _seconds !== "number") return "";
+            if (_seconds < 0) {
+                _seconds = Math.abs(_seconds);
+                //console.log(_seconds);
+            }
+            var hours = Math.floor(_seconds / 3600),
+                minutes = Math.floor((_seconds % 3600) / 60),
+                seconds = Math.floor(_seconds % 60);
+            var hour = hours > 0 ? padTime(hours) + ":" : "";
+            return hour + padTime(minutes) + ":" + padTime(seconds);
+        }
+        function setupSeek() {
+            seek.max = player.duration;
+        }
+        function seekAudio() {
+            isSeeking = true;
+            player.currentTime = seek.value;
+            isSeeking = false;
+        }
+        var prevcurrentime = 0;
+        function initProgressBar() {
+            if (!isSeeking) {
+                seek.value = player.currentTime;
+            }
+            var length = player.duration;
+            var current_time = player.currentTime;
+
+            // calculate total length of value
+            var totalLength = calculateTotalValue(length);
+
+
+            // calculate current value time
+            var currentTime = calculateCurrentValue(current_time);
+            if (player.readyState === 4) {
+                jQuery(".end-time").html(totalLength);
+                jQuery(".start-time").html(currentTime);
+            }
+            //checking if the current time is bigger than the previous or else there will be sync different between remaining and current
+            if (currentTime > prevcurrentime) {
+                //calculate the remaining time
+                var rem_time = length - current_time;
+                jQuery(".rem-time").html(calculateCurrentValue(rem_time));
+            }
+            //setting the previouscurrent time to this current time
+            prevcurrentime = currentTime;
+
+            if (player.currentTime == player.duration) {
+                $("#play-btn").removeClass("pause");
+            }
+        }
+
+        function initPlayers(num) {
+            // pass num in if there are multiple audio players e.g 'player' + i
+
+            for (var i = 0; i < num; i++) {
+                (function () {
+                    // Variables
+                    // ----------------------------------------------------------
+                    // audio embed object
+                    var playerContainer = document.getElementById("player-container"),
+                        player = document.getElementById("player"),
+                        isPlaying = false,
+                        playBtn = document.getElementById("play-btn");
+
+                    // Controls Listeners
+                    // ----------------------------------------------------------
+                    if (playBtn != null) {
+                        playBtn.addEventListener("click", function () {
+                            togglePlay();
+                        });
+                    }
+
+                    // Controls & Sounds Methods
+                    // ----------------------------------------------------------
+                    function togglePlay() {
+                        if (player.paused === false) {
+                            player.pause();
+                            isPlaying = false;
+                            $("#play-btn").removeClass("pause");
+                        } else {
+                            $(".start-time").html("Loading...");
+                            player.play();
+                            $("#play-btn").addClass("pause");
+                            isPlaying = true;
+                        }
+                    }
+                })();
+            }
+        }
+
+        initPlayers(jQuery("#player-container").length);
+
+        //seek js
+        setInterval(function () {
+            SetSeekColor();
+        }, 1);
+
+        function SetSeekColor() {
+            try {
+                var val =
+                    ($("#seekObj").val() - $("#seekObj").attr("min")) /
+                    ($("#seekObj").attr("max") - $("#seekObj").attr("min"));
+                var percent = val * 100;
+                $("#seekObj").css(
+                    "background-image",
+                    "-webkit-gradient(linear, left top, right top, " +
+                    "color-stop(" +
+                    percent +
+                    "%, #df7164), " +
+                    "color-stop(" +
+                    percent +
+                    "%, #F5D0CC)" +
+                    ")"
+                );
+
+                $("#seekObj").css(
+                    "background-image",
+                    "-moz-linear-gradient(left center, #DF7164 0%, #DF7164 " +
+                    percent +
+                    "%, #F5D0CC " +
+                    percent +
+                    "%, #F5D0CC 100%)"
+                );
+            } catch (e) { }
+        }
+
+        function showhideRemaining(e) {
+            $(e).toggleClass("end-time rem-time");
+        }
+
+    </script>
+</body>
+
+</html>
