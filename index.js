@@ -283,7 +283,7 @@ function createPlaylistHtml (playlistIndex) {
 
 let isLopped = false
 let isShuffled = false
-let isSeeked = false
+var isSeeked = false
 
 //********************* PLAYER FUNCTIONS****************************** */
 document.getElementById('player').addEventListener('click', function (e) {
@@ -358,17 +358,23 @@ function resetValues (audio, e) {
 
   if (!isSeeked) {
     elapsedTime.innerText = getPrintedTime(audio.currentTime)
-  } else if (isSeeked) {
-    slider.max = audio.duration //-------------
-    //handleSeek(audio, slider)
+  } /* else if (isSeeked) {
+    slider.max = audio.duration //-----------------------------------------------------
+
+    console.log('SEEK 1')
+
     elapsedTime.innerText = getPrintedTime(slider.value)
-  }
+    console.log(slider.value)
+    console.log(elapsedTime)
+  } */
 
   audio.addEventListener('timeupdate', () => {
     if (!isSeeked) {
+      //isSeeked = true
       elapsedTime.innerText = getPrintedTime(audio.currentTime)
       slider.max = audio.duration
       slider.value = audio.currentTime
+
       if (audio.ended && isLopped == true) {
         let nextButtonTarget = startButton.parentElement.children[1]
         getLoopMusic(nextButtonTarget)
@@ -376,8 +382,13 @@ function resetValues (audio, e) {
       if (audio.ended && isShuffled == true) {
         let nextButtonTarget = startButton.parentElement.children[1]
         getShuffledMusicList(nextButtonTarget)
-      }
+      } /* else if (isSeeked) {
+        console.log('seeked 2')
+        slider.max = audio.duration //-----------------------------------------------------
+        elapsedTime.innerText = getPrintedTime(slider.value)
+      } */
     }
+
     if (audio.ended) {
       //setting total end of slider line:
       slider.max = '100'
@@ -577,20 +588,14 @@ function getShuffledMusicList (e) {
 }
 
 //slider functions------------
-document.getElementById('player').addEventListener('change', function (e) {
+document.getElementById('player').addEventListener('click', function (e) {
   let audio = document.getElementsByTagName('audio')
+
   if (e.target.id == 'slider') {
-    isSeeked = true
-    handleSeek(audio[1], e)
+    e.target.max = audio[1].duration
+    let elapsedTimeCount = getPrintedTime(e.target.value)
+    let timeLengthCount = getPrintedTime(audio[1].duration)
+    document.getElementById('elapsedTime').innerHTML = elapsedTimeCount
+    document.getElementById('timeLength').innerHTML = timeLengthCount
   }
 })
-
-function handleSeek (audio, e) {
-  let sliderValue = (e.target.value / 100) * audio.duration
-
-  document.getElementById('elapsedTime').innerHTML = getPrintedTime(sliderValue)
-  document.getElementById('timeLength').innerHTML = getPrintedTime(
-    audio.duration
-  )
-  audio.currentTime = sliderValue
-}
