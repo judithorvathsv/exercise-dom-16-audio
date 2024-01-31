@@ -141,8 +141,9 @@ hr {
   align-self: center;
 }
 
+#pauseAndStartButton,
 .pauseButton {
-   transform: translateY(-10px); 
+  transform: translateY(-10px);
   font-size: 48px !important;
 }
 
