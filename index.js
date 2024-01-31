@@ -345,10 +345,6 @@ function startMusic (e, audio) {
   e.target.classList.remove('pauseButton')
   e.target.classList.add('startButton')
   resetValues(audio, e)
-
-  if (isShuffled) {
-    getShuffledMusicList(e, audio)
-  }
 }
 
 function resetValues (audio, e) {
@@ -376,6 +372,10 @@ function resetValues (audio, e) {
       if (audio.ended && isLopped == true) {
         let nextButtonTarget = startButton.parentElement.children[1]
         getLoopMusic(nextButtonTarget)
+      }
+      if (audio.ended && isShuffled == true) {
+        let nextButtonTarget = startButton.parentElement.children[1]
+        getShuffledMusicList(nextButtonTarget)
       }
     }
     if (audio.ended) {
@@ -456,6 +456,7 @@ function getNextMusic (e, audio) {
   }
 }
 
+//get loop music list function------------
 function getLoopMusic (e) {
   let audio = document.getElementsByTagName('audio')
 
@@ -526,28 +527,52 @@ function getLoopMusic (e) {
   }
 }
 
-//get shuffle music list function------------ NOT READY
-function getShuffledMusicList (e, audio) {
-  //if duration is ended : shuffle next music index
-  const musicIndex = e.target.parentElement.parentElement.children[8].innerText
+//get shuffle music list function------------
+function getShuffledMusicList (e) {
+  let audio = document.getElementsByTagName('audio')
+
+  const musicIndex = e.parentElement.parentElement.children[8].innerText
+  let nextMusicIndex = -1
+
   const allMusicInPlayer =
-    e.target.parentElement.parentElement.parentElement.children[2]
+    e.parentElement.parentElement.parentElement.children[3]
 
   for (let i = 0; i < allMusicInPlayer.children.length; i++) {
-    let randomIndex = getRandomInt(allMusicInPlayer.children.length)
+    let randomIndex = Math.floor(
+      Math.random() * allMusicInPlayer.children.length
+    )
 
-    let randomMusicIndexInList =
+    nextMusicIndex =
       allMusicInPlayer.children[randomIndex].children[1].children[2].innerText
 
-    if (musicIndex !== randomMusicIndexInList) {
-      let playlistAsHtml = createPlaylistHtml(randomMusicIndexInList)
-      let playerSection = document.getElementById('player')
-      playerSection.innerHTML = playlistAsHtml
+    if (musicIndex == nextMusicIndex) {
+      let randomIndex = Math.floor(
+        Math.random() * allMusicInPlayer.children.length
+      )
 
-      audio.autoplay = true
-      audio.play()
-      return
+      nextMusicIndex =
+        allMusicInPlayer.children[randomIndex].children[1].children[2].innerText
     }
+
+    let playlistAsHtml = createPlaylistHtml(nextMusicIndex)
+    let playerSection = document.getElementById('player')
+    playerSection.innerHTML = playlistAsHtml
+
+    let newSource = ''
+    for (let song of songs) {
+      if (song.index == nextMusicIndex) {
+        newSource = `assets/songlist/${song.source}`
+      }
+    }
+
+    audio[1].src = newSource
+
+    audio[1].autoplay = true
+    audio[1].play()
+
+    audio[1].addEventListener('ended', function () {
+      getShuffledMusicList(document.getElementById('goForwardButton'))
+    })
   }
 }
 
