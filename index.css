@@ -58,7 +58,7 @@ a:hover {
 
 main {
   align-self: center;
-  height: 80vh;
+  height: 88vh;
   width: 550px;
   background-color: var(--orange-color);
   padding: 1rem;
@@ -119,17 +119,31 @@ hr {
   align-self: center;
   padding-bottom: 0.5rem;
 }
+
 #album {
   align-self: center;
   padding-bottom: 1rem;
 }
 
-#buttonsDiv,
 #timesDiv {
   display: flex;
   justify-content: space-between;
   padding-bottom: 1rem;
   padding-top: 0.5rem;
+}
+
+#buttonsDiv {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 2rem;
+  padding-top: 0.5rem;
+  width: 20rem;
+  align-self: center;
+}
+
+.pauseButton {
+   transform: translateY(-10px); 
+  font-size: 48px !important;
 }
 
 @media only screen and (max-width: 530px) {
