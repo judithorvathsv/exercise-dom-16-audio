@@ -511,6 +511,42 @@ function makeButtonToLoopOnload (audio) {
   })
 }
 
+function makeButtonToShuffleOnload (audio) {
+  let shuffleButton = document.getElementById('shuffleButton')
+  shuffleButton.style.color = 'darkred'
+  shuffleButton.style.fontWeight = 'bold'
+  let startButton = document.getElementById('pauseAndStartButton')
+  startButton.classList.remove('startButton')
+  startButton.classList.add('pauseButton')
+  startButton.innerText = 'pause_circle'
+
+  let timeLength = document.getElementById('timeLength')
+  timeLength.innerText = getPrintedTime(audio.duration)
+
+  audio.addEventListener('timeupdate', () => {
+    //timings
+    let elapsedTime = document.getElementById('elapsedTime')
+    elapsedTime.innerText = getPrintedTime(audio.currentTime)
+    let timeLength = document.getElementById('timeLength')
+    timeLength.innerText = getPrintedTime(audio.duration)
+    document.getElementById('slider').max = audio.duration
+    document.getElementById('slider').value = audio.currentTime
+
+    if (audio.ended) {
+      //setting total end of slider line:
+      slider.max = '100'
+      slider.value = 100
+      elapsedTime.innerText = getPrintedTime(audio.duration)
+      let startButton = document.getElementById('pauseAndStartButton')
+      startButton.classList.remove('pauseButton')
+      startButton.classList.add('startButton')
+      startButton.innerText = 'not_started'
+
+      localStorage.removeItem('sliderStorage')
+    }
+  })
+}
+
 //get loop music list function------------
 function getLoopMusic (e) {
   let startButton = document.getElementById('pauseAndStartButton')
@@ -638,6 +674,10 @@ function getShuffledMusicList (e) {
       audio[1].src = newSource
       audio[1].autoplay = true
       audio[1].play()
+
+      audio[1].addEventListener('playing', function () {
+        makeButtonToShuffleOnload(audio[1])
+      })
     }
     audio[1].addEventListener('ended', function () {
       getShuffledMusicList(document.getElementById('goForwardButton'))
