@@ -673,7 +673,10 @@ function getShuffledMusicList (e) {
     if (shuffing && shuffing.length > 0 && shuffing == 'shuffle') {
       audio[1].src = newSource
       audio[1].autoplay = true
-      audio[1].play()
+      var playPromise = audio[1].play()
+      if (playPromise !== undefined) {
+        playPromise.then(_ => {}).catch(error => {})
+      }
 
       audio[1].addEventListener('playing', function () {
         makeButtonToShuffleOnload(audio[1])
