@@ -258,8 +258,23 @@ songSection.innerHTML = htmlString
 document
   .getElementById('songSection')
   .addEventListener('click', clickedSection => {
-    let playlistIndex =
-      clickedSection.target.parentElement.children[1].children[2].innerText
+    let playlistIndex = -1
+
+    if (
+      clickedSection.target.parentElement.parentElement.classList.contains(
+        'songDiv'
+      )
+    ) {
+      playlistIndex =
+        clickedSection.target.parentElement.parentElement.children[1]
+          .children[2].innerText
+    } else {
+      console.log(
+        clickedSection.target.parentElement.children[1].children[2].innerText
+      )
+      playlistIndex =
+        clickedSection.target.parentElement.children[1].children[2].innerText
+    }
 
     let playlistAsHtml = createPlaylistHtml(playlistIndex)
     let playerSection = document.getElementById('player')
@@ -288,7 +303,6 @@ var isSeeked = false
 //********************* PLAYER FUNCTIONS****************************** */
 document.getElementById('player').addEventListener('click', function (e) {
   let audio = e.target.parentElement.parentElement.children[0]
-
   if (e.target.classList.contains('pauseButton')) {
     startMusic(e, audio)
   } else if (e.target.classList.contains('startButton')) {
@@ -480,7 +494,6 @@ function makeButtonToLoopOnload (audio) {
   startButton.classList.add('pauseButton')
   startButton.innerText = 'pause_circle'
 
-  /*  */
   let timeLength = document.getElementById('timeLength')
   timeLength.innerText = getPrintedTime(audio.duration)
   audio.addEventListener('timeupdate', () => {
@@ -491,10 +504,6 @@ function makeButtonToLoopOnload (audio) {
     timeLength.innerText = getPrintedTime(audio.duration)
     document.getElementById('slider').max = audio.duration
     document.getElementById('slider').value = audio.currentTime
-    //startbutton
-    /*     let startButton = document.getElementById('pauseAndStartButton')
-    startButton.classList.remove('startButton')
-    startButton.classList.add('pauseButton') */
 
     if (audio.ended) {
       //setting total end of slider line:
