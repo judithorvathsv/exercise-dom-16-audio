@@ -297,15 +297,15 @@ let isLopped = false
 let isShuffled = false
 //********************* PLAYER FUNCTIONS****************************** */
 document.getElementById('player').addEventListener('click', function (e) {
-  let anchor = e.target.parentElement.parentElement.children[0]
+  let audio = e.target.parentElement.parentElement.children[0]
   if (e.target.classList.contains('pauseButton')) {
-    startMusic(e, anchor)
+    startMusic(e, audio)
   } else if (e.target.classList.contains('startButton')) {
-    pauseMusic(e, anchor)
+    pauseMusic(e, audio)
   } else if (e.target.id == 'goBackButton') {
     getPreviousMusic(e)
   } else if (e.target.id == 'goForwardButton') {
-    getNextMusic(e, anchor)
+    getNextMusic(e, audio)
   } else if (e.target.id == 'loopButton') {
     makeLoopMusicList(e)
   } else if (e.target.id == 'shuffleButton') {
