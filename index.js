@@ -269,9 +269,6 @@ document
         clickedSection.target.parentElement.parentElement.children[1]
           .children[2].innerText
     } else {
-      console.log(
-        clickedSection.target.parentElement.children[1].children[2].innerText
-      )
       playlistIndex =
         clickedSection.target.parentElement.children[1].children[2].innerText
     }
@@ -369,30 +366,26 @@ function resetValues (audio, e) {
   let startButton = e.target
   let timeLength = document.getElementById('timeLength')
   timeLength.innerText = getPrintedTime(audio.duration)
-  let storagedSlider = localStorage.getItem('sliderStorage')
   let elapsedTime = document.getElementById('elapsedTime')
   const slider = document.getElementById('slider')
 
-  if (!isSeeked) {
-    elapsedTime.innerText = getPrintedTime(audio.currentTime)
-  }
-
-  /*   if (storagedSlider !== null) {
-    elapsedTime.innerText = getPrintedTime(storagedSlider)
-    audio.currentTime = storagedSlider
-  } */
+  /*   var previousseekpos = 0
+  let myaudio = document.getElementById('myaudio')
+  myaudio?.addEventListener('seeked', function () {
+    console.log('here')
+    var currentSeekPos = this.currentTime
+    if (currentSeekPos - previousseekpos > 2.0) {
+      alert('Seek operation completed!')
+      previousseekpos = currentSeekPos
+    }
+  }) */
 
   audio.addEventListener('timeupdate', () => {
     if (!isSeeked) {
       elapsedTime.innerText = getPrintedTime(audio.currentTime)
       slider.max = audio.duration
       slider.value = audio.currentTime
-
-      /*       if (storagedSlider !== null) {
-        isSeeked = true
-        elapsedTime.innerText = getPrintedTime(storagedSlider)
-        audio.currentTime = storagedSlider
-      } */
+      //audio.currentTime = slider.value
 
       if (audio.ended && isLopped == true) {
         let nextButtonTarget = startButton.parentElement.children[1]
@@ -695,19 +688,4 @@ function getShuffledMusicList (e) {
       getShuffledMusicList(document.getElementById('goForwardButton'))
     })
   }
-}
-
-//slider functions------------
-document.getElementById('player').addEventListener('click', function (e) {
-  let audio = document.getElementsByTagName('audio')
-  if (e.target.id == 'slider') {
-    e.target.max = audio[1].duration
-    localStorage.setItem('sliderStorage', e.target.value)
-  }
-})
-
-function check () {
-  console.log('button')
-  document.getElementById('loopButton').style.color = 'green'
-  //e.target.style.color = 'darkred'
 }
