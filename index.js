@@ -309,10 +309,12 @@ function makeLoopMusicList (e) {
     isLopped = false
     e.target.style.color = 'black'
     e.target.style.fontWeight = 'normal'
+    localStorage.setItem('looping', 'notlooping')
   } else if (isLopped == false) {
     isLopped = true
     e.target.style.color = 'darkred'
     e.target.style.fontWeight = 'bold'
+    localStorage.setItem('looping', 'loop')
   }
 }
 
@@ -321,10 +323,12 @@ function makeShuffleMusicList (e) {
     isShuffled = false
     e.target.style.color = 'black'
     e.target.style.fontWeight = 'normal'
+    localStorage.setItem('shuffling', 'notshuffle')
   } else if (isShuffled == false) {
     isShuffled = true
     e.target.style.color = 'darkred'
     e.target.style.fontWeight = 'bold'
+    localStorage.setItem('shuffling', 'shuffle')
   }
 }
 
@@ -351,29 +355,30 @@ function resetValues (audio, e) {
   let startButton = e.target
   let timeLength = document.getElementById('timeLength')
   timeLength.innerText = getPrintedTime(audio.duration)
-
+  let storagedSlider = localStorage.getItem('sliderStorage')
   let elapsedTime = document.getElementById('elapsedTime')
-
   const slider = document.getElementById('slider')
 
   if (!isSeeked) {
     elapsedTime.innerText = getPrintedTime(audio.currentTime)
-  } /* else if (isSeeked) {
-    slider.max = audio.duration //-----------------------------------------------------
+  }
 
-    console.log('SEEK 1')
-
-    elapsedTime.innerText = getPrintedTime(slider.value)
-    console.log(slider.value)
-    console.log(elapsedTime)
+  /*   if (storagedSlider !== null) {
+    elapsedTime.innerText = getPrintedTime(storagedSlider)
+    audio.currentTime = storagedSlider
   } */
 
   audio.addEventListener('timeupdate', () => {
     if (!isSeeked) {
-      //isSeeked = true
       elapsedTime.innerText = getPrintedTime(audio.currentTime)
       slider.max = audio.duration
       slider.value = audio.currentTime
+
+      /*       if (storagedSlider !== null) {
+        isSeeked = true
+        elapsedTime.innerText = getPrintedTime(storagedSlider)
+        audio.currentTime = storagedSlider
+      } */
 
       if (audio.ended && isLopped == true) {
         let nextButtonTarget = startButton.parentElement.children[1]
@@ -382,11 +387,7 @@ function resetValues (audio, e) {
       if (audio.ended && isShuffled == true) {
         let nextButtonTarget = startButton.parentElement.children[1]
         getShuffledMusicList(nextButtonTarget)
-      } /* else if (isSeeked) {
-        console.log('seeked 2')
-        slider.max = audio.duration //-----------------------------------------------------
-        elapsedTime.innerText = getPrintedTime(slider.value)
-      } */
+      }
     }
 
     if (audio.ended) {
@@ -394,6 +395,9 @@ function resetValues (audio, e) {
       slider.max = '100'
       slider.value = 100
       elapsedTime.innerText = getPrintedTime(audio.duration)
+      localStorage.removeItem('sliderStorage')
+      e.target.classList.remove('pauseButton')
+      e.target.classList.add('startButton')
     }
   })
 }
@@ -467,9 +471,52 @@ function getNextMusic (e, audio) {
   }
 }
 
+function makeButtonToLoopOnload (audio) {
+  let loopButton = document.getElementById('loopButton')
+  loopButton.style.color = 'darkred'
+  loopButton.style.fontWeight = 'bold'
+  let startButton = document.getElementById('pauseAndStartButton')
+  startButton.classList.remove('startButton')
+  startButton.classList.add('pauseButton')
+  startButton.innerText = 'pause_circle'
+
+  /*  */
+  let timeLength = document.getElementById('timeLength')
+  timeLength.innerText = getPrintedTime(audio.duration)
+  audio.addEventListener('timeupdate', () => {
+    //timings
+    let elapsedTime = document.getElementById('elapsedTime')
+    elapsedTime.innerText = getPrintedTime(audio.currentTime)
+    let timeLength = document.getElementById('timeLength')
+    timeLength.innerText = getPrintedTime(audio.duration)
+    document.getElementById('slider').max = audio.duration
+    document.getElementById('slider').value = audio.currentTime
+    //startbutton
+    /*     let startButton = document.getElementById('pauseAndStartButton')
+    startButton.classList.remove('startButton')
+    startButton.classList.add('pauseButton') */
+
+    if (audio.ended) {
+      //setting total end of slider line:
+      slider.max = '100'
+      slider.value = 100
+      elapsedTime.innerText = getPrintedTime(audio.duration)
+      let startButton = document.getElementById('pauseAndStartButton')
+      startButton.classList.remove('pauseButton')
+      startButton.classList.add('startButton')
+      startButton.innerText = 'not_started'
+
+      localStorage.removeItem('sliderStorage')
+    }
+  })
+}
+
 //get loop music list function------------
 function getLoopMusic (e) {
+  let startButton = document.getElementById('pauseAndStartButton')
+
   let audio = document.getElementsByTagName('audio')
+  let looping = localStorage.getItem('looping')
 
   const musicIndex = e.parentElement.parentElement.children[8].innerText
   let nextMusicIndex = -1
@@ -499,10 +546,15 @@ function getLoopMusic (e) {
         }
       }
 
-      audio[1].src = newSource
+      if (looping && looping.length > 0 && looping == 'loop') {
+        audio[1].src = newSource
+        audio[1].autoplay = true
+        audio[1].play()
 
-      audio[1].autoplay = true
-      audio[1].play()
+        audio[1].addEventListener('playing', function () {
+          makeButtonToLoopOnload(audio[1])
+        })
+      }
 
       audio[1].addEventListener('ended', function () {
         getLoopMusic(document.getElementById('goForwardButton'))
@@ -526,11 +578,15 @@ function getLoopMusic (e) {
         }
       }
 
-      audio[1].src = newSource
+      if (looping && looping.length > 0 && looping == 'loop') {
+        audio[1].src = newSource
+        audio[1].autoplay = true
+        audio[1].play()
 
-      audio[1].autoplay = true
-      audio[1].play()
-
+        audio[1].addEventListener('playing', function () {
+          makeButtonToLoopOnload(audio[1])
+        })
+      }
       audio[1].addEventListener('ended', function () {
         getLoopMusic(document.getElementById('goForwardButton'))
       })
@@ -576,11 +632,13 @@ function getShuffledMusicList (e) {
       }
     }
 
-    audio[1].src = newSource
+    let shuffing = localStorage.getItem('shuffling')
 
-    audio[1].autoplay = true
-    audio[1].play()
-
+    if (shuffing && shuffing.length > 0 && shuffing == 'shuffle') {
+      audio[1].src = newSource
+      audio[1].autoplay = true
+      audio[1].play()
+    }
     audio[1].addEventListener('ended', function () {
       getShuffledMusicList(document.getElementById('goForwardButton'))
     })
@@ -590,12 +648,14 @@ function getShuffledMusicList (e) {
 //slider functions------------
 document.getElementById('player').addEventListener('click', function (e) {
   let audio = document.getElementsByTagName('audio')
-
   if (e.target.id == 'slider') {
     e.target.max = audio[1].duration
-    let elapsedTimeCount = getPrintedTime(e.target.value)
-    let timeLengthCount = getPrintedTime(audio[1].duration)
-    document.getElementById('elapsedTime').innerHTML = elapsedTimeCount
-    document.getElementById('timeLength').innerHTML = timeLengthCount
+    localStorage.setItem('sliderStorage', e.target.value)
   }
 })
+
+function check () {
+  console.log('button')
+  document.getElementById('loopButton').style.color = 'green'
+  //e.target.style.color = 'darkred'
+}
