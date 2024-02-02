@@ -295,23 +295,25 @@ function createPlaylistHtml (playlistIndex) {
 
 let isLopped = false
 let isShuffled = false
-var isSeeked = false
-
 //********************* PLAYER FUNCTIONS****************************** */
 document.getElementById('player').addEventListener('click', function (e) {
-  let audio = e.target.parentElement.parentElement.children[0]
+  let anchor = e.target.parentElement.parentElement.children[0]
   if (e.target.classList.contains('pauseButton')) {
-    startMusic(e, audio)
+    startMusic(e, anchor)
   } else if (e.target.classList.contains('startButton')) {
-    pauseMusic(e, audio)
+    pauseMusic(e, anchor)
   } else if (e.target.id == 'goBackButton') {
     getPreviousMusic(e)
   } else if (e.target.id == 'goForwardButton') {
-    getNextMusic(e, audio)
+    getNextMusic(e, anchor)
   } else if (e.target.id == 'loopButton') {
     makeLoopMusicList(e)
   } else if (e.target.id == 'shuffleButton') {
     makeShuffleMusicList(e)
+  } else if (e.target.id == 'slider') {
+    let myAudio = document.getElementsByTagName('audio')
+    e.target.max = myAudio[1].duration
+    myAudio[1].currentTime = e.target.value
   }
 })
 
@@ -368,33 +370,18 @@ function resetValues (audio, e) {
   timeLength.innerText = getPrintedTime(audio.duration)
   let elapsedTime = document.getElementById('elapsedTime')
   const slider = document.getElementById('slider')
-
-  /*   var previousseekpos = 0
-  let myaudio = document.getElementById('myaudio')
-  myaudio?.addEventListener('seeked', function () {
-    console.log('here')
-    var currentSeekPos = this.currentTime
-    if (currentSeekPos - previousseekpos > 2.0) {
-      alert('Seek operation completed!')
-      previousseekpos = currentSeekPos
-    }
-  }) */
-
   audio.addEventListener('timeupdate', () => {
-    if (!isSeeked) {
-      elapsedTime.innerText = getPrintedTime(audio.currentTime)
-      slider.max = audio.duration
-      slider.value = audio.currentTime
-      //audio.currentTime = slider.value
+    elapsedTime.innerText = getPrintedTime(audio.currentTime)
+    slider.max = audio.duration
+    slider.value = audio.currentTime
 
-      if (audio.ended && isLopped == true) {
-        let nextButtonTarget = startButton.parentElement.children[1]
-        getLoopMusic(nextButtonTarget)
-      }
-      if (audio.ended && isShuffled == true) {
-        let nextButtonTarget = startButton.parentElement.children[1]
-        getShuffledMusicList(nextButtonTarget)
-      }
+    if (audio.ended && isLopped == true) {
+      let nextButtonTarget = startButton.parentElement.children[1]
+      getLoopMusic(nextButtonTarget)
+    }
+    if (audio.ended && isShuffled == true) {
+      let nextButtonTarget = startButton.parentElement.children[1]
+      getShuffledMusicList(nextButtonTarget)
     }
 
     if (audio.ended) {
